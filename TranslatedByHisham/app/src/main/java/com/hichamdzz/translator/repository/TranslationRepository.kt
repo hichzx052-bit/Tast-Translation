@@ -1,63 +1,122 @@
 package com.hichamdzz.translator.repository
 
 import android.content.Context
-import com.hichamdzz.translator.api.*
-import com.hichamdzz.translator.model.TranslationResult
+import android.media.MediaPlayer
+import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
+import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class TranslationRepository @Inject constructor(
-    private val whisperApi: WhisperApi,
-    private val deepLApi: DeepLApi,
-    private val elevenLabsApi: ElevenLabsApi,
     @ApplicationContext private val context: Context
 ) {
-    suspend fun speechToText(audioFile: File, apiKey: String, language: String? = null): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            val filePart = MultipartBody.Part.createFormData("file", audioFile.name, audioFile.asRequestBody("audio/wav".toMediaType()))
-            val modelPart = "whisper-1".toRequestBody("text/plain".toMediaType())
-            val langPart = language?.toRequestBody("text/plain".toMediaType())
-            val response = whisperApi.transcribe(filePart, modelPart, langPart, "Bearer $apiKey")
-            if (response.isSuccessful) Result.success(response.body()?.text ?: "")
-            else Result.failure(Exception("Whisper error: ${response.code()}"))
-        } catch (e: Exception) { Result.failure(e) }
+    private var tts: TextToSpeech? = null
+    private var ttsReady = false
+    private var currentTtsLocale: Locale = Locale.ENGLISH
+
+    private val _lastRecognizedText = MutableStateFlow("")
+    val lastRecognizedText: StateFlow<String> = _lastRecognizedText
+
+    private val _lastTranslatedText = MutableStateFlow("")
+    val lastTranslatedText: StateFlow<String> = _lastTranslatedText
+
+    private val _isListening = MutableStateFlow(false)
+    val isListening: StateFlow<Boolean> = _isListening
+
+    init {
+        tts = TextToSpeech(context) { status ->
+            ttsReady = status == TextToSpeech.SUCCESS
+        }
     }
 
-    suspend fun translateText(text: String, targetLang: String, sourceLang: String? = null, apiKey: String): Result<TranslationResult> = withContext(Dispatchers.IO) {
+    suspend fun translateText(text: String, sourceLang: String, targetLang: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val response = deepLApi.translate(text, targetLang.uppercase(), sourceLang?.uppercase(), "DeepL-Auth-Key $apiKey")
-            if (response.isSuccessful) {
-                val translation = response.body()?.translations?.firstOrNull()
-                Result.success(TranslationResult(
-                    originalText = text, translatedText = translation?.text ?: "",
-                    sourceLanguage = translation?.detected_source_language ?: sourceLang ?: "auto",
-                    targetLanguage = targetLang
-                ))
-            } else Result.failure(Exception("DeepL error: ${response.code()}"))
-        } catch (e: Exception) { Result.failure(e) }
+            // Use Google Translate free endpoint
+            val url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=$sourceLang&tl=$targetLang&dt=t&q=${java.net.URLEncoder.encode(text, "UTF-8")}"
+            val connection = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0")
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
+
+            val response = connection.inputStream.bufferedReader().readText()
+            // Parse response: [[["translated text","original text",...]]]
+            val translated = response.substringAfter("\"").substringBefore("\"")
+            _lastTranslatedText.value = translated
+            Result.success(translated)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    suspend fun textToSpeech(text: String, voiceId: String, apiKey: String): Result<ByteArray> = withContext(Dispatchers.IO) {
-        try {
-            val response = elevenLabsApi.textToSpeech(voiceId, TTSRequest(text = text), apiKey)
-            if (response.isSuccessful) Result.success(response.body()?.bytes() ?: byteArrayOf())
-            else Result.failure(Exception("ElevenLabs error: ${response.code()}"))
-        } catch (e: Exception) { Result.failure(e) }
+    fun speakText(text: String, languageCode: String) {
+        if (!ttsReady) return
+        val locale = Locale(languageCode)
+        tts?.language = locale
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts_${System.currentTimeMillis()}")
     }
 
-    suspend fun fullTranslation(audioFile: File, targetLang: String, voiceId: String, whisperKey: String, deeplKey: String, elevenKey: String): Result<Pair<TranslationResult, ByteArray>> {
-        val text = speechToText(audioFile, whisperKey).getOrElse { return Result.failure(it) }
-        val translation = translateText(text, targetLang, apiKey = deeplKey).getOrElse { return Result.failure(it) }
-        val audio = textToSpeech(translation.translatedText, voiceId, elevenKey).getOrElse { return Result.failure(it) }
-        return Result.success(Pair(translation, audio))
+    fun stopSpeaking() {
+        tts?.stop()
+    }
+
+    fun startListening(languageCode: String, onResult: (String) -> Unit, onError: (String) -> Unit) {
+        if (!SpeechRecognizer.isRecognitionAvailable(context)) {
+            onError("Speech recognition not available")
+            return
+        }
+
+        _isListening.value = true
+        val recognizer = SpeechRecognizer.createSpeechRecognizer(context)
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageCode)
+            putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+        }
+
+        recognizer.setRecognitionListener(object : RecognitionListener {
+            override fun onResults(results: Bundle?) {
+                val text = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull() ?: ""
+                _lastRecognizedText.value = text
+                _isListening.value = false
+                onResult(text)
+                recognizer.destroy()
+            }
+            override fun onPartialResults(results: Bundle?) {
+                val text = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull() ?: ""
+                _lastRecognizedText.value = text
+            }
+            override fun onError(error: Int) {
+                _isListening.value = false
+                onError("Recognition error: $error")
+                recognizer.destroy()
+            }
+            override fun onReadyForSpeech(params: Bundle?) {}
+            override fun onBeginningOfSpeech() {}
+            override fun onRmsChanged(rmsdB: Float) {}
+            override fun onBufferReceived(buffer: ByteArray?) {}
+            override fun onEndOfSpeech() { _isListening.value = false }
+            override fun onEvent(eventType: Int, params: Bundle?) {}
+        })
+
+        recognizer.startListening(intent)
+    }
+
+    fun release() {
+        tts?.shutdown()
     }
 }

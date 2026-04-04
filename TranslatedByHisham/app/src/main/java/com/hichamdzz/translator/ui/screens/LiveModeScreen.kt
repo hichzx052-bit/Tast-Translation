@@ -27,9 +27,9 @@ fun LiveModeScreen(navController: NavController, viewModel: MainViewModel) {
     val isTranslating by viewModel.isTranslating.collectAsState()
     val hearMy by viewModel.hearMyLanguage.collectAsState()
     val hearTheir by viewModel.hearTheirLanguage.collectAsState()
-
-    val waveAnim = rememberInfiniteTransition(label = "wave")
-    val waveOffset by waveAnim.animateFloat(0f, 1f, infiniteRepeatable(tween(2000), RepeatMode.Restart), label = "wo")
+    val recognized by viewModel.recognizedText.collectAsState()
+    val translated by viewModel.translatedText.collectAsState()
+    val status by viewModel.statusMessage.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize().background(BackgroundDark)) {
         TopAppBar(title = { Text("وضع اللايف", color = TextPrimary) },
@@ -41,55 +41,56 @@ fun LiveModeScreen(navController: NavController, viewModel: MainViewModel) {
             Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = SurfaceDark), modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(if (isTranslating) SuccessGreen else ErrorRed))
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(Modifier.width(8.dp))
                     Text(if (isTranslating) "مباشر — جارٍ الترجمة" else "متوقف", color = TextPrimary)
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Waveform placeholder
-            if (isTranslating) {
-                Row(modifier = Modifier.fillMaxWidth().height(80.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                    repeat(20) { i ->
-                        val h = (30 + 50 * Math.sin((i + waveOffset * 20) * 0.5)).dp
-                        Box(modifier = Modifier.width(4.dp).height(h).padding(horizontal = 1.dp).clip(RoundedCornerShape(2.dp)).background(Brush.verticalGradient(listOf(GradientStart, GradientEnd))))
-                    }
+            // Translation output
+            Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = SurfaceDark), modifier = Modifier.fillMaxWidth().weight(1f)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("🎤 الكلام الأصلي:", color = TextSecondary, fontSize = 12.sp)
+                    Text(recognized.ifEmpty { "..." }, color = TextPrimary, fontSize = 16.sp)
+                    Spacer(Modifier.height(16.dp))
+                    Divider(color = TextSecondary.copy(alpha = 0.2f))
+                    Spacer(Modifier.height(16.dp))
+                    Text("🌐 الترجمة:", color = Accent, fontSize = 12.sp)
+                    Text(translated.ifEmpty { "..." }, color = SuccessGreen, fontSize = 20.sp)
+                    Spacer(Modifier.height(16.dp))
+                    if (status.isNotEmpty()) Text(status, color = Accent, fontSize = 14.sp)
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Language pair
+            // Language info
             Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = SurfaceDark), modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text("يسمع صوتي بـ:", color = TextSecondary)
-                    Text("${targetLang.flag} ${targetLang.nativeName}", color = TextPrimary, fontSize = 20.sp)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("أسمع صوتهم بـ:", color = TextSecondary)
-                    Text("${sourceLang.flag} ${sourceLang.nativeName}", color = TextPrimary, fontSize = 20.sp)
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("يسمع صوتي بـ: ${targetLang.flag} ${targetLang.nativeName}", color = TextPrimary)
+                    Text("أسمع صوتهم بـ: ${sourceLang.flag} ${sourceLang.nativeName}", color = TextPrimary)
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
             // Toggles
             Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = SurfaceDark), modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text("اسمع لغتي", color = TextPrimary, modifier = Modifier.weight(1f))
-                        Switch(checked = hearMy, onCheckedChange = { viewModel.toggleHearMyLanguage() }, colors = SwitchDefaults.colors(checkedTrackColor = Primary))
+                        Switch(hearMy, { viewModel.toggleHearMyLanguage() }, colors = SwitchDefaults.colors(checkedTrackColor = Primary))
                     }
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text("اسمع لغتهم", color = TextPrimary, modifier = Modifier.weight(1f))
-                        Switch(checked = hearTheir, onCheckedChange = { viewModel.toggleHearTheirLanguage() }, colors = SwitchDefaults.colors(checkedTrackColor = Primary))
+                        Switch(hearTheir, { viewModel.toggleHearTheirLanguage() }, colors = SwitchDefaults.colors(checkedTrackColor = Primary))
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(Modifier.height(16.dp))
 
-            // Start/Stop button
             Button(
                 onClick = { viewModel.toggleTranslation() },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -97,10 +98,10 @@ fun LiveModeScreen(navController: NavController, viewModel: MainViewModel) {
                 colors = ButtonDefaults.buttonColors(containerColor = if (isTranslating) ErrorRed else Primary)
             ) {
                 Icon(if (isTranslating) Icons.Default.Stop else Icons.Default.PlayArrow, null)
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(Modifier.width(8.dp))
                 Text(if (isTranslating) "إيقاف" else "بدء الترجمة المباشرة", fontSize = 16.sp)
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
