@@ -21,18 +21,20 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Create Gradle Wrapper
-        run: |
-          gradle wrapper --gradle-version 8.7
-          chmod +x gradlew
+        run: gradle wrapper --gradle-version 8.7 && chmod +x gradlew
       - name: Create local.properties
-        run: echo "sdk.dir=\$ANDROID_SDK_ROOT" > local.properties
-      - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Build Debug APK (Signed)
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Rename APK
+        run: |
+          mkdir -p output
+          cp app/build/outputs/apk/debug/app-debug.apk output/TranslatedByHisham.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: TranslatedByHisham-APK
-          path: TranslatedByHisham/app/build/outputs/apk/release/*.apk
+          path: TranslatedByHisham/output/TranslatedByHisham.apk
 
   build-update-manager:
     name: "Update Manager APK"
@@ -50,15 +52,17 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Create Gradle Wrapper
-        run: |
-          gradle wrapper --gradle-version 8.7
-          chmod +x gradlew
+        run: gradle wrapper --gradle-version 8.7 && chmod +x gradlew
       - name: Create local.properties
-        run: echo "sdk.dir=\$ANDROID_SDK_ROOT" > local.properties
-      - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Build Debug APK (Signed)
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Rename APK
+        run: |
+          mkdir -p output
+          cp app/build/outputs/apk/debug/app-debug.apk output/UpdateManager.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: UpdateManager-APK
-          path: UpdateManager/app/build/outputs/apk/release/*.apk
+          path: UpdateManager/output/UpdateManager.apk
