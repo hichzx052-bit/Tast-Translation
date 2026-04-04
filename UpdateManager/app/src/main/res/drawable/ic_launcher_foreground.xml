@@ -1,6 +1,14 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-    <path android:fillColor="#FF6B35" android:pathData="M54,20L58,30L68,30L60,37L63,48L54,41L45,48L48,37L40,30L50,30Z"/>
-    <path android:fillColor="#AAAAAA" android:pathData="M54,52a22,22,0,1,0,0.01,0z"/>
-    <path android:fillColor="#0A0A1A" android:pathData="M54,57a17,17,0,1,0,0.01,0z"/>
-    <path android:fillColor="#FF6B35" android:pathData="M50,62L54,68L58,62L56,62L56,58L52,58L52,62Z"/>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Background -->
+    <path android:fillColor="#FF6B35" android:pathData="M54,4C26.4,4,4,26.4,4,54s22.4,50,50,50s50,-22.4,50,-50S81.6,4,54,4z"/>
+    <path android:fillColor="#FF8C5A" android:pathData="M54,14C32.5,14,15,31.5,15,53s17.5,39,39,39s39,-17.5,39,-39S75.5,14,54,14z" android:fillAlpha="0.3"/>
+    <!-- Gear teeth -->
+    <path android:fillColor="#FFFFFF" android:pathData="M54,26l3,6h6l3,-6h-12zM54,82l3,-6h6l3,6h-12zM26,54l6,3v6l-6,3v-12zM82,54l-6,3v6l6,3v-12zM32,32l6,2l4,-4l-2,-6zM76,76l-6,-2l-4,4l2,6zM76,32l-2,6l-4,4l-6,-2zM32,76l2,-6l4,-4l6,2z"/>
+    <!-- Gear circle -->
+    <path android:fillColor="#FFFFFF" android:pathData="M54,38c-8.8,0,-16,7.2,-16,16s7.2,16,16,16s16,-7.2,16,-16S62.8,38,54,38z"/>
+    <path android:fillColor="#FF6B35" android:pathData="M54,44c-5.5,0,-10,4.5,-10,10s4.5,10,10,10s10,-4.5,10,-10S59.5,44,54,44z"/>
+    <!-- Lightning bolt -->
+    <path android:fillColor="#FFFFFF" android:pathData="M57,44l-7,12h5l-2,8l7,-12h-5l2,-8z"/>
 </vector>

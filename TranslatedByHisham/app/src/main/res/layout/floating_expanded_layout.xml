@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/expanded_container"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/floating_expanded_bg"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Translated by Hisham"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:gravity="center" />
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#33FFFFFF" android:layout_marginVertical="8dp" />
+
+    <TextView
+        android:id="@+id/tv_recognized"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="..."
+        android:textColor="#B0B0C0"
+        android:textSize="12sp"
+        android:maxLines="2" />
+
+    <TextView
+        android:id="@+id/tv_translated"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="..."
+        android:textColor="#2ED573"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp"
+        android:maxLines="3" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_translate"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="🎤 ترجم"
+            android:textSize="12sp"
+            android:backgroundTint="#6C63FF"
+            android:layout_marginEnd="4dp" />
+
+        <Button
+            android:id="@+id/btn_swap_lang"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="🔄 عكس"
+            android:textSize="12sp"
+            android:backgroundTint="#3F37C9"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_my_lang"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text="لغتي: عربي"
+            android:textSize="10sp"
+            android:backgroundTint="#141428"
+            android:layout_marginEnd="4dp" />
+
+        <Button
+            android:id="@+id/btn_their_lang"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text="لغتهم: English"
+            android:textSize="10sp"
+            android:backgroundTint="#141428"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_close"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="8dp"
+        android:text="✕ إغلاق"
+        android:textSize="12sp"
+        android:backgroundTint="#FF4757" />
+</LinearLayout>

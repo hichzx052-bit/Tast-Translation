@@ -7,17 +7,17 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".TranslatorApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_app_logo"
         android:label="Translated by Hisham"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.TranslatedByHisham"
         tools:targetApi="34">
@@ -34,13 +34,13 @@
 
         <service
             android:name=".service.TranslationForegroundService"
-            android:foregroundServiceType="microphone|mediaProjection"
+            android:foregroundServiceType="microphone"
             android:exported="false" />
 
         <service
             android:name=".service.FloatingWidgetService"
-            android:exported="false"
-            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+            android:foregroundServiceType="specialUse"
+            android:exported="false" />
 
     </application>
 </manifest>
