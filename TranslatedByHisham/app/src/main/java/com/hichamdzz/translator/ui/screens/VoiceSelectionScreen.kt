@@ -1,6 +1,7 @@
 package com.hichamdzz.translator.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +26,6 @@ import com.hichamdzz.translator.viewmodel.MainViewModel
 @Composable
 fun VoiceSelectionScreen(navController: NavController, viewModel: MainViewModel) {
     val selectedVoice by viewModel.selectedVoice.collectAsState()
-    val voices = Voice.DEFAULT_VOICES
 
     Column(modifier = Modifier.fillMaxSize().background(BackgroundDark)) {
         TopAppBar(title = { Text("اختيار الصوت", color = TextPrimary) },
@@ -33,20 +33,20 @@ fun VoiceSelectionScreen(navController: NavController, viewModel: MainViewModel)
             colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundDark))
 
         LazyColumn(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(voices) { voice ->
+            items(Voice.DEFAULT_VOICES) { voice ->
                 val isSelected = voice.id == selectedVoice.id
                 Card(
-                    modifier = Modifier.fillMaxWidth().clickable { viewModel.setSelectedVoice(voice) },
+                    modifier = Modifier.fillMaxWidth().clickable { viewModel.setSelectedVoice(voice) }
+                        .then(if (isSelected) Modifier.border(2.dp, Brush.linearGradient(listOf(GradientStart, GradientEnd)), RoundedCornerShape(16.dp)) else Modifier),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = if (isSelected) Primary.copy(alpha = 0.2f) else SurfaceDark),
-                    border = if (isSelected) CardDefaults.outlinedCardBorder().copy(brush = Brush.linearGradient(listOf(GradientStart, GradientEnd))) else null
+                    colors = CardDefaults.cardColors(containerColor = if (isSelected) Primary.copy(alpha = 0.2f) else SurfaceDark)
                 ) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Box(modifier = Modifier.size(48.dp).clip(CircleShape).background(if (isSelected) Primary else SurfaceDark), contentAlignment = Alignment.Center) {
-                            Icon(if (voice.gender == "Male") Icons.Default.Male else Icons.Default.Female, null, tint = TextPrimary)
+                            Icon(if (voice.gender == "Male") Icons.Default.Person else Icons.Default.Person, null, tint = TextPrimary)
                         }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
+                        Spacer(Modifier.width(16.dp))
+                        Column(Modifier.weight(1f)) {
                             Text(voice.name, color = TextPrimary, style = MaterialTheme.typography.titleMedium)
                             Text("${voice.gender} • ${voice.language}", color = TextSecondary, style = MaterialTheme.typography.bodySmall)
                         }

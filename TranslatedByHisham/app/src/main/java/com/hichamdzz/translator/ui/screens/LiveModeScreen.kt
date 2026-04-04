@@ -52,7 +52,7 @@ fun LiveModeScreen(navController: NavController, viewModel: MainViewModel) {
             if (isTranslating) {
                 Row(modifier = Modifier.fillMaxWidth().height(80.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
                     repeat(20) { i ->
-                        val h = (30 + 50 * kotlin.math.sin((i + waveOffset * 20) * 0.5)).dp
+                        val h = (30 + 50 * Math.sin((i + waveOffset * 20) * 0.5)).dp
                         Box(modifier = Modifier.width(4.dp).height(h).padding(horizontal = 1.dp).clip(RoundedCornerShape(2.dp)).background(Brush.verticalGradient(listOf(GradientStart, GradientEnd))))
                     }
                 }

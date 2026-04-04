@@ -1,2 +1,32 @@
-# Tast-Translation
-Translated by Hisham - Professional AI Voice Translation App | Developer: Hichamdzz
+# 🌐 Tast Translation
+
+## 📱 التطبيقات
+
+### 1. Translated by Hisham (التطبيق الرئيسي)
+تطبيق ترجمة صوتية فورية بالذكاء الاصطناعي
+
+**المميزات:**
+- 🎤 ترجمة صوت↔صوت (Whisper + DeepL + ElevenLabs)
+- 🔍 كشف لغة المتحدث تلقائي
+- 📱 زر عائم يشتغل فوق أي تطبيق
+- 🎬 وضع اللايف (TikTok Live)
+- 🎥 ترجمة الفيديوهات
+- 🗣️ 8 أصوات بشرية حقيقية
+- 🔄 ترجمة ثنائية (20 لغة)
+- 🌙 تصميم داكن احترافي
+
+### 2. Update Manager (تطبيق المطور)
+تطبيق خاص بالمطور للتحكم بالتحديثات
+
+**المميزات:**
+- 🔐 دخول بكود سري
+- 📦 رفع تحديثات على GitHub
+- 📝 تعديل version.json
+
+## 📥 تحميل الـ APK
+1. اذهب لـ [Actions](../../actions)
+2. اضغط على آخر build ناجح
+3. حمّل الـ APK من **Artifacts**
+
+## 👨‍💻 Developer
+**Hichamdzz**
