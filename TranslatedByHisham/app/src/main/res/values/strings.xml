@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Translated by Hisham</string>
+    <string name="developer_code">Hichamdzz</string>
+    <string name="update_required">يتوفر تحديث جديد</string>
+    <string name="update_now">تحديث الآن</string>
+    <string name="skip">SKIP</string>
+    <string name="start_translation">بدء الترجمة</string>
+    <string name="stop_translation">إيقاف الترجمة</string>
+    <string name="select_voice">اختيار الصوت</string>
+    <string name="select_language">اختيار اللغة</string>
+    <string name="settings">الإعدادات</string>
+    <string name="hear_my_language">اسمع لغتي</string>
+    <string name="hear_their_language">اسمع لغتهم</string>
+    <string name="onboarding_welcome">مرحباً بك في Translated by Hisham</string>
+    <string name="onboarding_permissions">نحتاج بعض الصلاحيات</string>
+    <string name="onboarding_how">كيف تستخدم التطبيق</string>
+    <string name="onboarding_ready">جاهز للاستخدام!</string>
+</resources>

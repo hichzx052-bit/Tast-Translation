@@ -1,0 +1,4 @@
+-keepattributes *Annotation*
+-keep class com.hichamdzz.translator.** { *; }
+-keep class retrofit2.** { *; }
+-keep class okhttp3.** { *; }

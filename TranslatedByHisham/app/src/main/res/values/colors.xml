@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#6C63FF</color>
+    <color name="primary_dark">#3F37C9</color>
+    <color name="accent">#00D4FF</color>
+    <color name="background_dark">#0A0A1A</color>
+    <color name="surface_dark">#141428</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0C0</color>
+    <color name="glow_blue">#4CC9F0</color>
+    <color name="glow_purple">#7B2FBE</color>
+    <color name="gradient_start">#6C63FF</color>
+    <color name="gradient_end">#00D4FF</color>
+</resources>
