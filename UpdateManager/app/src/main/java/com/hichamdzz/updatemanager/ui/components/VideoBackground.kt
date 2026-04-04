@@ -1,4 +1,4 @@
-package com.hichamdzz.translator.ui.components
+package com.hichamdzz.updatemanager.ui.components
 
 import android.content.res.AssetFileDescriptor
 import android.media.MediaPlayer
@@ -14,11 +14,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 fun VideoBackground(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
-
-    DisposableEffect(Unit) {
-        onDispose { mediaPlayer?.release() }
-    }
-
+    DisposableEffect(Unit) { onDispose { mediaPlayer?.release() } }
     AndroidView(
         factory = { ctx ->
             SurfaceView(ctx).apply {
@@ -35,15 +31,10 @@ fun VideoBackground(modifier: Modifier = Modifier) {
                             mp.setOnPreparedListener { it.start() }
                             mp.prepareAsync()
                             mediaPlayer = mp
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                        } catch (e: Exception) { e.printStackTrace() }
                     }
                     override fun surfaceChanged(h: SurfaceHolder, f: Int, w: Int, he: Int) {}
-                    override fun surfaceDestroyed(h: SurfaceHolder) {
-                        mediaPlayer?.release()
-                        mediaPlayer = null
-                    }
+                    override fun surfaceDestroyed(h: SurfaceHolder) { mediaPlayer?.release(); mediaPlayer = null }
                 })
             }
         },
