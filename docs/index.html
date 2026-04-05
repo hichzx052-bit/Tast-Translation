@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0A0A1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Translated by Hisham</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+body{font-family:'Tajawal',sans-serif;background:#0A0A1A;color:#fff;min-height:100vh;overflow-x:hidden}
+
+/* Video Background */
+.video-bg{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.video-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,10,26,0.75);z-index:-1;backdrop-filter:blur(2px)}
+
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;padding:20px;z-index:1}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+.header h1{font-size:20px;background:linear-gradient(135deg,#6C63FF,#00D4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .settings-btn{width:40px;height:40px;border-radius:50%;background:rgba(20,20,40,0.7);border:1px solid rgba(108,99,255,0.2);color:#B0B0C0;font-size:20px;cursor:pointer;backdrop-filter:blur(10px)}
+
+/* Glassmorphism cards */
+.glass{background:rgba(20,20,40,0.6);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:20px}
+
+/* Language Selector */
+.lang-selector{padding:20px;margin:20px 0;display:flex;align-items:center;justify-content:space-around}
+.lang-box{text-align:center;cursor:pointer;padding:10px;border-radius:12px;transition:0.3s}
+.lang-box:hover{background:rgba(108,99,255,0.15)}
+.lang-box .flag{font-size:36px;display:block}
+.lang-box .name{font-size:14px;color:#fff;margin-top:4px}
+.swap-btn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6C63FF,#00D4FF);border:none;color:#fff;font-size:22px;cursor:pointer;transition:0.3s}
+.swap-btn:hover{transform:rotate(180deg)}
+
+/* Results */
+.results{padding:16px;margin:16px 0;min-height:80px;display:none}
+.results.show{display:block}
+.result-label{font-size:12px;color:#B0B0C0;margin-bottom:4px}
+.result-original{font-size:16px;color:#fff;margin-bottom:12px;line-height:1.6}
+.result-translated{font-size:20px;color:#2ED573;font-weight:700;line-height:1.6}
+.result-divider{height:1px;background:rgba(255,255,255,0.1);margin:12px 0}
+
+/* Status */
+.status{text-align:center;color:#00D4FF;font-size:14px;min-height:24px;margin:8px 0}
+
+/* Mic Button */
+.mic-container{display:flex;flex-direction:column;align-items:center;margin:30px 0}
+.mic-pulse{width:160px;height:160px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}
+.mic-pulse.active::before{content:'';position:absolute;width:100%;height:100%;border-radius:50%;background:rgba(108,99,255,0.2);animation:pulse 1.5s infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:0.5}100%{transform:scale(1.3);opacity:0}}
+.mic-btn{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#6C63FF,#00D4FF);border:none;color:#fff;font-size:48px;cursor:pointer;transition:0.3s;position:relative;z-index:1;box-shadow:0 8px 32px rgba(108,99,255,0.4)}
+.mic-btn.recording{background:linear-gradient(135deg,#FF4757,#FF6B81);box-shadow:0 8px 32px rgba(255,71,87,0.4);animation:glow 1s infinite alternate}
+@keyframes glow{from{box-shadow:0 8px 32px rgba(255,71,87,0.4)}to{box-shadow:0 8px 48px rgba(255,71,87,0.6)}}
+.mic-label{font-size:16px;color:#B0B0C0;margin-top:12px}
+
+/* Bottom Actions */
+.bottom-actions{display:flex;justify-content:space-around;margin-top:20px}
+.action-btn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px}
+.action-btn .icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;transition:0.3s;backdrop-filter:blur(10px)}
+.action-btn:hover .icon{background:rgba(108,99,255,0.2)}
+.action-btn .label{font-size:12px;color:#B0B0C0}
+
+/* Tabs */
+.tabs{display:flex;border-radius:16px;margin:16px 0;overflow:hidden}
+.tab{flex:1;padding:12px;text-align:center;cursor:pointer;transition:0.3s;font-size:14px;color:#B0B0C0;border:none;background:rgba(20,20,40,0.5)}
+.tab.active{background:linear-gradient(135deg,#6C63FF,#00D4FF);color:#fff;font-weight:700}
+
+/* Text Translation */
+.text-section{margin:16px 0;display:none}
+.text-section.show{display:block}
+.text-input{width:100%;background:rgba(20,20,40,0.6);border:2px solid rgba(108,99,255,0.2);border-radius:16px;padding:16px;color:#fff;font-size:16px;font-family:'Tajawal';resize:none;min-height:120px;transition:0.3s;backdrop-filter:blur(10px)}
+.text-input:focus{border-color:#6C63FF;outline:none}
+.translate-text-btn{width:100%;padding:14px;background:linear-gradient(135deg,#6C63FF,#00D4FF);border:none;color:#fff;font-size:16px;font-weight:700;border-radius:28px;cursor:pointer;margin-top:12px;font-family:'Tajawal'}
+.text-result{padding:16px;margin-top:12px;min-height:60px}
+.text-result p{font-size:18px;color:#2ED573;line-height:1.6}
+
+/* Language Picker Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100;justify-content:center;align-items:center;backdrop-filter:blur(5px)}
+.modal-overlay.show{display:flex}
+.modal{background:rgba(20,20,40,0.95);border:1px solid rgba(108,99,255,0.2);border-radius:24px;padding:24px;width:90%;max-width:400px;max-height:80vh;overflow-y:auto;backdrop-filter:blur(20px)}
+.modal h3{font-size:18px;margin-bottom:16px;color:#6C63FF}
+.lang-option{padding:12px 16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:0.2s;margin:4px 0}
+.lang-option:hover{background:rgba(108,99,255,0.15)}
+.lang-option .opt-flag{font-size:24px}
+.lang-option .opt-name{font-size:16px}
+
+/* Settings Panel */
+.settings-panel{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,10,26,0.97);z-index:200;padding:20px;overflow-y:auto;backdrop-filter:blur(10px)}
+.settings-panel.show{display:block}
+.settings-back{background:none;border:none;color:#fff;font-size:24px;cursor:pointer;margin-bottom:20px}
+.settings-section{padding:16px;margin:12px 0}
+.settings-section h3{font-size:16px;color:#6C63FF;margin-bottom:12px}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.setting-row label{color:#fff;font-size:14px}
+.toggle{width:50px;height:28px;background:#333;border-radius:14px;position:relative;cursor:pointer;transition:0.3s}
+.toggle.on{background:#6C63FF}
+.toggle::after{content:'';width:24px;height:24px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:0.3s}
+.toggle.on::after{left:24px}
+
+/* Developer */
+.dev-input{width:100%;background:rgba(26,26,46,0.8);border:1px solid #333;border-radius:12px;padding:12px;color:#fff;font-size:14px;margin:8px 0;font-family:'Tajawal'}
+.dev-btn{padding:12px 24px;background:#6C63FF;border:none;color:#fff;border-radius:12px;cursor:pointer;font-family:'Tajawal';font-size:14px;width:100%;margin-top:8px}
+.dev-status{color:#2ED573;font-size:13px;margin-top:8px}
+
+/* Voice selector */
+.voice-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.voice-card{background:rgba(26,26,46,0.8);border:2px solid transparent;border-radius:12px;padding:12px;cursor:pointer;text-align:center;transition:0.3s}
+.voice-card.selected{border-color:#6C63FF;background:rgba(108,99,255,0.15)}
+.voice-card .v-name{font-size:13px;color:#fff;margin-top:4px}
+.voice-card .v-type{font-size:11px;color:#B0B0C0}
+
+/* History */
+.history-item{padding:12px;margin:8px 0;border-radius:12px}
+.history-item .h-from{font-size:13px;color:#B0B0C0}
+.history-item .h-to{font-size:16px;color:#2ED573;margin-top:4px}
+.history-item .h-time{font-size:11px;color:#555;margin-top:4px}
+
+/* Branding */
+.branding{text-align:center;padding:16px;margin-top:20px;font-size:12px;color:#444}
+.branding a{color:#6C63FF;text-decoration:none}
+</style>
+</head>
+<body>
+
+<!-- Video Background -->
+<video class="video-bg" autoplay muted loop playsinline>
+  <source src="bg_video.mp4" type="video/mp4">
+</video>
+<div class="video-overlay"></div>
+
+<div class="app" id="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>⚡ Translated by Hisham</h1>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs glass">
+    <button class="tab active" onclick="switchTab('voice')">🎤 صوت</button>
+    <button class="tab" onclick="switchTab('text')">✍️ نص</button>
+    <button class="tab" onclick="switchTab('history')">📋 سجل</button>
+  </div>
+
+  <!-- Language Selector -->
+  <div class="lang-selector glass">
+    <div class="lang-box" onclick="openLangPicker('source')">
+      <span class="flag" id="src-flag">🇸🇦</span>
+      <span class="name" id="src-name">العربية</span>
+    </div>
+    <button class="swap-btn" onclick="swapLangs()">⇄</button>
+    <div class="lang-box" onclick="openLangPicker('target')">
+      <span class="flag" id="tgt-flag">🇺🇸</span>
+      <span class="name" id="tgt-name">English</span>
+    </div>
+  </div>
+
+  <!-- Voice Tab -->
+  <div id="voice-tab">
+    <div class="results glass" id="results">
+      <div class="result-label" id="res-src-label">🎤 العربية:</div>
+      <div class="result-original" id="res-original"></div>
+      <div class="result-divider"></div>
+      <div class="result-label" id="res-tgt-label" style="color:#00D4FF">🌐 English:</div>
+      <div class="result-translated" id="res-translated"></div>
+    </div>
+    <div class="status" id="status"></div>
+    <div class="mic-container">
+      <div class="mic-pulse" id="mic-pulse">
+        <button class="mic-btn" id="mic-btn" onclick="toggleVoice()">🎤</button>
+      </div>
+      <span class="mic-label" id="mic-label">اضغط للترجمة</span>
+    </div>
+  </div>
+
+  <!-- Text Tab -->
+  <div id="text-tab" class="text-section">
+    <textarea class="text-input" id="text-input" placeholder="اكتب النص هنا..."></textarea>
+    <button class="translate-text-btn" onclick="translateText()">ترجم النص</button>
+    <div class="text-result glass" id="text-result" style="display:none">
+      <p id="text-translated"></p>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div id="history-tab" class="text-section">
+    <div id="history-list">
+      <p style="color:#555;text-align:center;padding:40px">لا يوجد سجل بعد</p>
+    </div>
+  </div>
+
+  <!-- Bottom Actions -->
+  <div class="bottom-actions">
+    <div class="action-btn" onclick="speakTranslation()">
+      <div class="icon glass">🔊</div>
+      <span class="label">أعد النطق</span>
+    </div>
+    <div class="action-btn" onclick="copyTranslation()">
+      <div class="icon glass">📋</div>
+      <span class="label">نسخ</span>
+    </div>
+    <div class="action-btn" onclick="clearAll()">
+      <div class="icon glass">🗑️</div>
+      <span class="label">مسح</span>
+    </div>
+    <div class="action-btn" onclick="shareApp()">
+      <div class="icon glass">📤</div>
+      <span class="label">مشاركة</span>
+    </div>
+  </div>
+
+  <div class="branding">
+    ⚡ Developer: <a href="#">Hichamdzz</a> — v1.0.0
+  </div>
+</div>
+
+<!-- Language Picker Modal -->
+<div class="modal-overlay" id="lang-modal">
+  <div class="modal">
+    <h3 id="modal-title">اختيار اللغة</h3>
+    <div id="lang-options"></div>
+  </div>
+</div>
+
+<!-- Settings Panel -->
+<div class="settings-panel" id="settings-panel">
+  <button class="settings-back" onclick="toggleSettings()">← الرجوع</button>
+  <h2 style="margin-bottom:16px">⚙️ الإعدادات</h2>
+  
+  <div class="settings-section glass">
+    <h3>🗣️ الصوت</h3>
+    <div class="setting-row">
+      <label>نطق الترجمة تلقائياً</label>
+      <div class="toggle on" id="auto-speak-toggle" onclick="toggleAutoSpeak()"></div>
+    </div>
+    <div class="setting-row">
+      <label>سرعة النطق</label>
+      <select style="background:rgba(26,26,46,0.8);color:#fff;border:1px solid #333;border-radius:8px;padding:6px" id="speed-select">
+        <option value="0.7">بطيء</option>
+        <option value="1" selected>عادي</option>
+        <option value="1.3">سريع</option>
+      </select>
+    </div>
+    <h4 style="margin-top:12px;color:#B0B0C0;font-size:13px">اختيار الصوت:</h4>
+    <div class="voice-list" id="voice-list"></div>
+  </div>
+
+  <div class="settings-section glass">
+    <h3>🎨 المظهر</h3>
+    <div class="setting-row">
+      <label>خلفية الفيديو</label>
+      <div class="toggle on" id="video-toggle" onclick="toggleVideo()"></div>
+    </div>
+  </div>
+
+  <div class="settings-section glass">
+    <h3>👨‍💻 المطور</h3>
+    <input class="dev-input" type="password" id="dev-code" placeholder="أدخل كود المطور">
+    <button class="dev-btn" onclick="checkDevCode()">دخول</button>
+    <div id="dev-panel" style="display:none;margin-top:16px">
+      <div class="dev-status">✅ مرحباً Hichamdzz!</div>
+      <p style="color:#B0B0C0;font-size:13px;margin-top:8px">
+        Developer: Hichamdzz<br>
+        Version: 1.0.0<br>
+        Engine: Web Speech API + Google Translate<br>
+        Languages: 20<br>
+        Features: Voice + Text + TTS + History
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+const LANGS=[
+  {code:'ar',name:'العربية',flag:'🇸🇦'},{code:'en',name:'English',flag:'🇺🇸'},
+  {code:'fr',name:'Français',flag:'🇫🇷'},{code:'es',name:'Español',flag:'🇪🇸'},
+  {code:'de',name:'Deutsch',flag:'🇩🇪'},{code:'it',name:'Italiano',flag:'🇮🇹'},
+  {code:'pt',name:'Português',flag:'🇵🇹'},{code:'ru',name:'Русский',flag:'🇷🇺'},
+  {code:'zh-CN',name:'中文',flag:'🇨🇳'},{code:'ja',name:'日本語',flag:'🇯🇵'},
+  {code:'ko',name:'한국어',flag:'🇰🇷'},{code:'tr',name:'Türkçe',flag:'🇹🇷'},
+  {code:'hi',name:'हिन्दी',flag:'🇮🇳'},{code:'nl',name:'Nederlands',flag:'🇳🇱'},
+  {code:'pl',name:'Polski',flag:'🇵🇱'},{code:'sv',name:'Svenska',flag:'🇸🇪'},
+  {code:'uk',name:'Українська',flag:'🇺🇦'},{code:'id',name:'Indonesia',flag:'🇮🇩'},
+  {code:'th',name:'ไทย',flag:'🇹🇭'},{code:'vi',name:'Tiếng Việt',flag:'🇻🇳'},
+];
+let srcLang=LANGS[0],tgtLang=LANGS[1],isRecording=false,recognition=null,autoSpeak=true,history=[],lastTranslated='',pickingFor='source';
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+function loadVoices(){const vl=document.getElementById('voice-list');if(!vl)return;const voices=speechSynthesis.getVoices();if(!voices.length)return;vl.innerHTML='';const shown=new Set;voices.forEach((v,i)=>{if(shown.size>=8)return;if(shown.has(v.name))return;shown.add(v.name);const c=document.createElement('div');c.className='voice-card'+(i===0?' selected':'');c.innerHTML=`<div class="v-name">${v.name.split(' ').slice(0,2).join(' ')}</div><div class="v-type">${v.lang}</div>`;c.onclick=()=>{document.querySelectorAll('.voice-card').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');window.selectedVoice=v};vl.appendChild(c)})}
+speechSynthesis.onvoiceschanged=loadVoices;setTimeout(loadVoices,500);
+
+function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById('voice-tab').style.display=t==='voice'?'block':'none';document.getElementById('text-tab').style.display=t==='text'?'block':'none';document.getElementById('text-tab').className=t==='text'?'text-section show':'text-section';document.getElementById('history-tab').style.display=t==='history'?'block':'none';document.getElementById('history-tab').className=t==='history'?'text-section show':'text-section';document.querySelectorAll('.tab')[t==='voice'?0:t==='text'?1:2].classList.add('active')}
+
+function openLangPicker(t){pickingFor=t;document.getElementById('modal-title').textContent=t==='source'?'لغة الكلام':'لغة الترجمة';const o=document.getElementById('lang-options');o.innerHTML='';LANGS.forEach(l=>{const d=document.createElement('div');d.className='lang-option';d.innerHTML=`<span class="opt-flag">${l.flag}</span><span class="opt-name">${l.name}</span>`;d.onclick=()=>selectLang(l);o.appendChild(d)});document.getElementById('lang-modal').classList.add('show')}
+function selectLang(l){if(pickingFor==='source'){srcLang=l;document.getElementById('src-flag').textContent=l.flag;document.getElementById('src-name').textContent=l.name}else{tgtLang=l;document.getElementById('tgt-flag').textContent=l.flag;document.getElementById('tgt-name').textContent=l.name}document.getElementById('lang-modal').classList.remove('show')}
+document.getElementById('lang-modal').onclick=e=>{if(e.target.id==='lang-modal')e.target.classList.remove('show')};
+
+function swapLangs(){[srcLang,tgtLang]=[tgtLang,srcLang];document.getElementById('src-flag').textContent=srcLang.flag;document.getElementById('src-name').textContent=srcLang.name;document.getElementById('tgt-flag').textContent=tgtLang.flag;document.getElementById('tgt-name').textContent=tgtLang.name}
+
+function toggleVoice(){if(!SR){setStatus('❌ متصفحك لا يدعم التعرف على الكلام');return}if(isRecording){stopRec();return}startRec()}
+function startRec(){isRecording=true;recognition=new SR;recognition.lang=srcLang.code;recognition.continuous=false;recognition.interimResults=true;document.getElementById('mic-btn').classList.add('recording');document.getElementById('mic-btn').textContent='⏹';document.getElementById('mic-pulse').classList.add('active');document.getElementById('mic-label').textContent='جارٍ الاستماع...';setStatus('🎤 تكلم الآن...');recognition.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;document.getElementById('res-original').textContent=t;document.getElementById('results').classList.add('show');document.getElementById('res-src-label').textContent=`🎤 ${srcLang.name}:`;if(e.results[e.results.length-1].isFinal){setStatus('🌐 جارٍ الترجمة...');doTranslate(t)}};recognition.onerror=e=>{setStatus('❌ خطأ: '+e.error);stopRec()};recognition.onend=()=>{if(isRecording)stopRec()};recognition.start()}
+function stopRec(){isRecording=false;if(recognition)recognition.stop();document.getElementById('mic-btn').classList.remove('recording');document.getElementById('mic-btn').textContent='🎤';document.getElementById('mic-pulse').classList.remove('active');document.getElementById('mic-label').textContent='اضغط للترجمة'}
+
+async function doTranslate(text){try{const sl=srcLang.code.split('-')[0],tl=tgtLang.code.split('-')[0];const r=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`);const d=await r.json();let tr='';d[0].forEach(s=>{if(s[0])tr+=s[0]});document.getElementById('res-tgt-label').textContent=`🌐 ${tgtLang.name}:`;document.getElementById('res-translated').textContent=tr;lastTranslated=tr;setStatus('✅ تمت الترجمة');addHistory(text,tr);if(autoSpeak)speak(tr,tgtLang.code)}catch(e){setStatus('❌ '+e.message)}}
+
+async function translateText(){const t=document.getElementById('text-input').value.trim();if(!t)return;setStatus('🌐 جارٍ الترجمة...');try{const sl=srcLang.code.split('-')[0],tl=tgtLang.code.split('-')[0];const r=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(t)}`);const d=await r.json();let tr='';d[0].forEach(s=>{if(s[0])tr+=s[0]});document.getElementById('text-translated').textContent=tr;document.getElementById('text-result').style.display='block';lastTranslated=tr;setStatus('✅ تمت الترجمة');addHistory(t,tr);if(autoSpeak)speak(tr,tgtLang.code)}catch(e){setStatus('❌ '+e.message)}}
+
+function speak(t,l){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=l;u.rate=parseFloat(document.getElementById('speed-select')?.value||1);if(window.selectedVoice)u.voice=window.selectedVoice;speechSynthesis.speak(u)}
+function speakTranslation(){if(lastTranslated)speak(lastTranslated,tgtLang.code)}
+function copyTranslation(){if(lastTranslated){navigator.clipboard?.writeText(lastTranslated);setStatus('📋 تم النسخ!');setTimeout(()=>setStatus(''),2000)}}
+function clearAll(){document.getElementById('results').classList.remove('show');document.getElementById('res-original').textContent='';document.getElementById('res-translated').textContent='';document.getElementById('text-input').value='';document.getElementById('text-result').style.display='none';lastTranslated='';setStatus('')}
+function shareApp(){if(navigator.share)navigator.share({title:'Translated by Hisham',text:'تطبيق ترجمة صوتية — By Hichamdzz',url:window.location.href});else{setStatus('📤 انسخ الرابط وشاركه')}}
+
+function addHistory(f,t){history.unshift({from:f,to:t,time:new Date().toLocaleTimeString('ar')});if(history.length>20)history.pop();renderHistory()}
+function renderHistory(){const l=document.getElementById('history-list');if(!history.length){l.innerHTML='<p style="color:#555;text-align:center;padding:40px">لا يوجد سجل بعد</p>';return}l.innerHTML=history.map(h=>`<div class="history-item glass"><div class="h-from">${h.from}</div><div class="h-to">${h.to}</div><div class="h-time">${h.time}</div></div>`).join('')}
+
+function toggleSettings(){document.getElementById('settings-panel').classList.toggle('show')}
+function toggleAutoSpeak(){autoSpeak=!autoSpeak;document.getElementById('auto-speak-toggle').classList.toggle('on')}
+function toggleVideo(){const v=document.querySelector('.video-bg');v.style.display=v.style.display==='none'?'':'none';document.getElementById('video-toggle').classList.toggle('on')}
+function checkDevCode(){if(document.getElementById('dev-code').value==='Hichamdzz')document.getElementById('dev-panel').style.display='block';else alert('كود خاطئ!')}
+function setStatus(m){document.getElementById('status').textContent=m}
+</script>
+</body>
+</html>
