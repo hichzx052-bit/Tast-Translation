@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Japoni Studio — Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: rgba(10, 10, 20, 0.92);
+  --card: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.06);
+  --gold: #ffd700;
+  --gold2: #ff9500;
+  --accent: #a855f7;
+  --green: #22c55e;
+  --red: #ef4444;
+  --text: #e4e4e7;
+  --muted: #71717a;
+  --dim: #3f3f46;
+}
+
+html, body { height: 100%; }
+body {
+  font-family: 'Tajawal', -apple-system, sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: transparent;
+  position: relative;
+}
+
+/* ===== TRANSPARENT / GLASS BG ===== */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(168,85,247,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(255,149,0,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(10,10,20,0.95) 0%, rgba(10,10,20,0.85) 100%);
+  z-index: -2;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.5' fill='rgba(255,255,255,0.03)'/%3E%3C/svg%3E");
+  z-index: -1;
+}
+
+/* Floating particles */
+.particles {
+  position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+}
+.particle {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: rgba(255,215,0,0.3);
+  border-radius: 50%;
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+.container { max-width: 480px; margin: 0 auto; padding: 16px; padding-bottom: 40px; }
+
+/* ===== HEADER ===== */
+.header { text-align: center; padding: 24px 0 16px; }
+.logo-icon { font-size: 2.8em; margin-bottom: 4px; filter: drop-shadow(0 0 20px rgba(255,215,0,0.4)); }
+.logo-text {
+  font-size: 1.8em; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--gold2), var(--accent));
+  background-size: 200% 200%;
+  animation: gradShift 3s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+@keyframes gradShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.logo-sub { color: var(--muted); font-size: 0.8em; margin-top: 2px; }
+.badge {
+  display: inline-block;
+  background: rgba(168,85,247,0.15);
+  color: var(--accent);
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.72em;
+  font-weight: 700;
+  margin-top: 8px;
+  border: 1px solid rgba(168,85,247,0.2);
+}
+
+/* ===== PROGRESS ===== */
+.progress { display: flex; gap: 3px; margin: 16px 0 20px; align-items: center; }
+.prog-dot {
+  flex: 1; height: 3px; border-radius: 2px;
+  background: var(--dim);
+  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.prog-dot.done { background: var(--gold); }
+.prog-dot.now { background: var(--gold); box-shadow: 0 0 12px rgba(255,215,0,0.5); }
+
+/* ===== CARDS (GLASS) ===== */
+.card {
+  display: none;
+  background: var(--card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 24px;
+  animation: cardIn 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.card.active { display: block; }
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.card-head { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.card-num {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2em; font-weight: 900; color: #000;
+  box-shadow: 0 4px 20px rgba(255,215,0,0.25);
+  flex-shrink: 0;
+}
+.card-title { font-size: 1.1em; font-weight: 700; }
+.card-desc { font-size: 0.8em; color: var(--muted); margin-top: 2px; }
+
+/* ===== INPUTS ===== */
+label { display: block; font-size: 0.82em; color: var(--muted); margin: 16px 0 6px; font-weight: 500; }
+input[type="text"], input[type="number"], textarea, select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.95em;
+  outline: none;
+  transition: all 0.3s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(255,215,0,0.08);
+}
+textarea {
+  min-height: 150px;
+  resize: vertical;
+  font-family: 'Courier New', monospace;
+  line-height: 1.7;
+  font-size: 0.9em;
+}
+select option { background: #1a1a2e; }
+
+/* ===== UPLOAD ZONE ===== */
+input[type="file"] { display: none; }
+.upload {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 32px 16px;
+  border: 2px dashed rgba(255,255,255,0.08);
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+}
+.upload:hover { border-color: var(--gold); background: rgba(255,215,0,0.03); }
+.upload.ok { border-color: var(--green); border-style: solid; background: rgba(34,197,94,0.05); }
+.upload .u-icon { font-size: 2.5em; filter: grayscale(0.5); transition: filter 0.3s; }
+.upload:hover .u-icon { filter: grayscale(0); }
+.upload .u-text { font-size: 0.88em; color: var(--muted); }
+.upload.ok .u-text { color: var(--green); }
+.thumb {
+  max-width: 90px; max-height: 90px;
+  border-radius: 14px;
+  margin-top: 10px;
+  display: none;
+  border: 2px solid rgba(255,255,255,0.08);
+}
+
+/* ===== INFO BOX (CapCut tutorial) ===== */
+.info-box {
+  background: rgba(168,85,247,0.08);
+  border: 1px solid rgba(168,85,247,0.15);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-top: 14px;
+  font-size: 0.83em;
+  line-height: 1.8;
+  color: #c4b5fd;
+}
+.info-box b { color: var(--accent); }
+.info-box .info-title {
+  font-weight: 700;
+  font-size: 0.95em;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 16px;
+  font-size: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Tajawal', sans-serif;
+  margin-top: 14px;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.btn:hover::after { opacity: 1; }
+
+.btn-next {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #000;
+}
+.btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,215,0,0.25); }
+
+.btn-back {
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+  margin-top: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.btn-back:hover { background: rgba(255,255,255,0.08); }
+
+.btn-go {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  font-size: 1.1em;
+  padding: 17px;
+}
+.btn-go:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(34,197,94,0.3); }
+
+.btn-dl {
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  color: #fff;
+  font-size: 1.1em;
+  padding: 17px;
+}
+.btn-dl:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(168,85,247,0.3); }
+
+.btn-extract {
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+  color: #fff;
+}
+.btn-extract:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(236,72,153,0.3); }
+
+/* ===== CHIPS (selectors) ===== */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.chip {
+  flex: 1; min-width: 70px;
+  padding: 11px 8px;
+  text-align: center;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.3);
+  color: var(--muted);
+  transition: all 0.2s;
+}
+.chip:hover { border-color: rgba(255,215,0,0.3); }
+.chip.sel {
+  border-color: var(--gold);
+  background: rgba(255,215,0,0.1);
+  color: var(--gold);
+  box-shadow: 0 0 12px rgba(255,215,0,0.1);
+}
+
+/* ===== TOGGLE ===== */
+.tog-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 14px;
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+.tog {
+  width: 44px; height: 24px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+.tog.on { background: var(--green); }
+.tog::after {
+  content: '';
+  width: 20px; height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px; left: 2px;
+  transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.tog.on::after { left: 22px; }
+.tog-text { font-size: 0.85em; color: #a1a1aa; }
+
+/* ===== COLOR DOTS ===== */
+.colors { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.cdot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+}
+.cdot:hover { transform: scale(1.15); }
+.cdot.sel { border-color: var(--gold); box-shadow: 0 0 12px rgba(255,215,0,0.3); }
+.cpick { display: flex; gap: 10px; align-items: center; margin-top: 6px; }
+.cpick input[type="color"] { width: 42px; height: 36px; border: none; border-radius: 10px; cursor: pointer; background: none; padding: 0; }
+.cpick input[type="text"] { flex: 1; }
+
+/* ===== LYRICS CHOICE ===== */
+.lyrics-choice {
+  display: flex; gap: 10px; margin-top: 12px;
+}
+.lc-opt {
+  flex: 1;
+  padding: 20px 12px;
+  text-align: center;
+  border-radius: 16px;
+  cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.3);
+  transition: all 0.3s;
+}
+.lc-opt:hover { border-color: rgba(255,215,0,0.3); }
+.lc-opt.sel { border-color: var(--gold); background: rgba(255,215,0,0.08); }
+.lc-opt .lc-icon { font-size: 2em; margin-bottom: 8px; }
+.lc-opt .lc-title { font-size: 0.9em; font-weight: 700; color: var(--text); }
+.lc-opt .lc-desc { font-size: 0.75em; color: var(--muted); margin-top: 4px; }
+
+/* ===== EXTRACT BOX ===== */
+.extract-box {
+  background: rgba(236,72,153,0.06);
+  border: 1px solid rgba(236,72,153,0.15);
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 14px;
+  display: none;
+}
+.extract-box.show { display: block; animation: cardIn 0.3s ease; }
+.ex-title { font-weight: 700; color: #f472b6; font-size: 0.95em; margin-bottom: 6px; }
+.ex-desc { font-size: 0.8em; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+.ex-status {
+  display: none; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  margin-top: 10px;
+}
+.ex-status.show { display: flex; }
+.ex-status.working { background: rgba(255,215,0,0.08); color: var(--gold); }
+.ex-status.done { background: rgba(34,197,94,0.08); color: var(--green); }
+.ex-status.err { background: rgba(239,68,68,0.08); color: var(--red); }
+.mini-spin {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,215,0,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== LOADING ===== */
+.loader {
+  display: none;
+  text-align: center;
+  background: var(--card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 40px 24px;
+}
+.loader.active { display: block; animation: cardIn 0.4s ease; }
+.loader-ring {
+  width: 64px; height: 64px;
+  border: 3px solid rgba(255,255,255,0.06);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto 20px;
+}
+.loader-title { font-size: 1.1em; font-weight: 700; }
+.loader-sub { color: var(--muted); font-size: 0.82em; margin-top: 4px; }
+.loader-pct {
+  font-size: 2.5em; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 12px;
+}
+.loader-bar {
+  width: 100%; height: 5px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+.loader-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.3s;
+}
+
+/* ===== RESULT ===== */
+.result {
+  display: none;
+  text-align: center;
+  background: var(--card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 28px;
+}
+.result.active { display: block; animation: cardIn 0.4s ease; }
+.result-icon { font-size: 3.5em; margin-bottom: 8px; }
+.result-title { font-size: 1.3em; font-weight: 900; }
+.result-sub { color: var(--muted); font-size: 0.82em; margin-top: 4px; }
+#resultVideo {
+  width: 100%;
+  border-radius: 16px;
+  margin: 16px 0;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ===== SUMMARY ===== */
+.summary {
+  background: rgba(0,0,0,0.3);
+  border-radius: 16px;
+  padding: 18px;
+  font-size: 0.88em;
+  line-height: 2;
+}
+.summary b { color: var(--gold); }
+
+/* ===== HINT ===== */
+.hint { color: var(--dim); font-size: 0.77em; margin-top: 6px; line-height: 1.6; }
+.hint code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-icon">🎵</div>
+    <div class="logo-text">Japoni Studio</div>
+    <div class="logo-sub">صانع فيديوهات الكلمات الاحترافي</div>
+    <div class="badge">✨ PRO V3</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress">
+    <div class="prog-dot now" id="pd1"></div>
+    <div class="prog-dot" id="pd2"></div>
+    <div class="prog-dot" id="pd3"></div>
+    <div class="prog-dot" id="pd4"></div>
+    <div class="prog-dot" id="pd5"></div>
+  </div>
+
+  <!-- ========== STEP 1: IMAGE ========== -->
+  <div class="card active" id="s1">
+    <div class="card-head">
+      <div class="card-num">1</div>
+      <div>
+        <div class="card-title">📸 صورة الشخصية</div>
+        <div class="card-desc">بدون خلفية (PNG شفاف)</div>
+      </div>
+    </div>
+
+    <label class="upload" id="imgZone">
+      <span class="u-icon">🖼️</span>
+      <span class="u-text" id="imgTxt">اضغط لاختيار صورة بدون خلفية</span>
+      <input type="file" id="imgFile" accept="image/*">
+    </label>
+    <img class="thumb" id="imgThumb">
+
+    <!-- CapCut Tutorial -->
+    <div class="info-box">
+      <div class="info-title">📱 كيف تشيل الخلفية من CapCut؟</div>
+      1️⃣ افتح <b>CapCut</b> واستورد الصورة<br>
+      2️⃣ اضغط على الصورة → اختر <b>"إزالة الخلفية"</b><br>
+      3️⃣ أو روح <b>تعديل → قص ذكي</b><br>
+      4️⃣ احفظها كـ <b>PNG</b> (عشان الشفافية)<br>
+      5️⃣ أو استخدم موقع <b>remove.bg</b> مجاناً
+    </div>
+
+    <label>📍 موقع الشخصية</label>
+    <div class="chips">
+      <div class="chip sel" onclick="pick(this,'pos','right')">يمين ➡️</div>
+      <div class="chip" onclick="pick(this,'pos','left')">⬅️ يسار</div>
+      <div class="chip" onclick="pick(this,'pos','center')">🎯 وسط</div>
+    </div>
+
+    <button class="btn btn-next" onclick="go(2)">التالي ←</button>
+  </div>
+
+  <!-- ========== STEP 2: USERNAME ========== -->
+  <div class="card" id="s2">
+    <div class="card-head">
+      <div class="card-num">2</div>
+      <div>
+        <div class="card-title">👤 اليوزرنيم</div>
+        <div class="card-desc">اختياري — يظهر فوق الشخصية</div>
+      </div>
+    </div>
+
+    <input type="text" id="username" placeholder="مثال: @hicham_07_dz (أو خلّه فاضي)">
+    <p class="hint">💡 لو ما تبي يوزرنيم خلّ الخانة فاضية — عادي!</p>
+
+    <button class="btn btn-next" onclick="go(3)">التالي ←</button>
+    <button class="btn btn-back" onclick="go(1)">→ رجوع</button>
+  </div>
+
+  <!-- ========== STEP 3: AUDIO + LYRICS ========== -->
+  <div class="card" id="s3">
+    <div class="card-head">
+      <div class="card-num">3</div>
+      <div>
+        <div class="card-title">🎵 الأغنية والكلمات</div>
+        <div class="card-desc">اختر الأغنية + طريقة إدخال الكلمات</div>
+      </div>
+    </div>
+
+    <label class="upload" id="audZone">
+      <span class="u-icon">🎶</span>
+      <span class="u-text" id="audTxt">اضغط لاختيار الأغنية (MP3/WAV)</span>
+      <input type="file" id="audFile" accept="audio/*">
+    </label>
+    <div id="audDur" style="color:var(--green);margin-top:8px;display:none;font-size:0.88em"></div>
+
+    <!-- Lyrics choice -->
+    <label>📝 الكلمات — اختر الطريقة:</label>
+    <div class="lyrics-choice">
+      <div class="lc-opt sel" id="lcManual" onclick="lyricsMode('manual')">
+        <div class="lc-icon">✍️</div>
+        <div class="lc-title">كتابة يدوية</div>
+        <div class="lc-desc">عندي الكلمات جاهزة</div>
+      </div>
+      <div class="lc-opt" id="lcAuto" onclick="lyricsMode('auto')">
+        <div class="lc-icon">🤖</div>
+        <div class="lc-title">استخراج تلقائي</div>
+        <div class="lc-desc">حوّل الأغنية لكلمات</div>
+      </div>
+    </div>
+
+    <!-- Manual lyrics -->
+    <div id="manualBox">
+      <label>اكتب الكلمات:</label>
+      <textarea id="lyrics" placeholder="كل سطر = مجموعة كلمات تظهر مع بعض
+الفاصلة (,) تفصل بين الكلمات
+
+مثال:
+Yak tmnito, ykhafou, w ygoulou, zrou9 Avatar
+Ki ymout el rap, n3awd n7yih, 3aytou li, Balthazar"></textarea>
+      <p class="hint">📌 كل سطر = مجموعة — الفاصلة <code>,</code> تفصل بين الكلمات</p>
+    </div>
+
+    <!-- Auto extract -->
+    <div class="extract-box" id="extractBox">
+      <div class="ex-title">🤖 استخراج الكلمات تلقائياً</div>
+      <div class="ex-desc">
+        يشغّل الأغنية ويحولها لكلمات مكتوبة تلقائياً<br>
+        🌍 يدعم: العربية، الفرنسية، الإنجليزية<br>
+        ⚠️ يحتاج متصفح Chrome + ميكروفون
+      </div>
+
+      <label>🌐 لغة الأغنية:</label>
+      <div class="chips">
+        <div class="chip sel" onclick="pick(this,'lang','ar-DZ')">🇩🇿 عربي/دارجة</div>
+        <div class="chip" onclick="pick(this,'lang','fr-FR')">🇫🇷 فرنسي</div>
+        <div class="chip" onclick="pick(this,'lang','en-US')">🇺🇸 إنجليزي</div>
+      </div>
+
+      <button class="btn btn-extract" onclick="startExtract()">🎤 ابدأ الاستخراج</button>
+      <button class="btn btn-back" id="stopExtBtn" style="display:none;color:var(--red)" onclick="stopExtract()">⏹ أوقف الاستخراج</button>
+
+      <div class="ex-status" id="exStatus"></div>
+
+      <div id="extractResult" style="display:none;margin-top:14px">
+        <label>📝 الكلمات المستخرجة (عدّلها لو تبي):</label>
+        <textarea id="extractedLyrics" placeholder="الكلمات المستخرجة تظهر هنا..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-next" onclick="go(4)">التالي ←</button>
+    <button class="btn btn-back" onclick="go(2)">→ رجوع</button>
+  </div>
+
+  <!-- ========== STEP 4: SETTINGS ========== -->
+  <div class="card" id="s4">
+    <div class="card-head">
+      <div class="card-num">4</div>
+      <div>
+        <div class="card-title">⚙️ الإعدادات</div>
+        <div class="card-desc">التوقيت والألوان والتأثيرات</div>
+      </div>
+    </div>
+
+    <!-- Speed -->
+    <label>⏱ سرعة الكلمات</label>
+    <div class="chips">
+      <div class="chip" onclick="setSpd(this,0.4,0.6)">⚡ سريع</div>
+      <div class="chip sel" onclick="setSpd(this,0.7,1.0)">🎯 عادي</div>
+      <div class="chip" onclick="setSpd(this,1.2,1.8)">🐢 بطيء</div>
+      <div class="chip" onclick="setSpd(this,-1,-1)">⚙️ مخصص</div>
+    </div>
+    <div id="custSpd" style="display:none">
+      <label>بين كل كلمة (ثانية)</label>
+      <input type="number" id="wGap" value="0.7" min="0.2" max="5" step="0.1">
+      <label>بين كل مجموعة (ثانية)</label>
+      <input type="number" id="gGap" value="1.0" min="0.3" max="8" step="0.1">
+    </div>
+
+    <label>⏱ بداية أول كلمة (ثانية)</label>
+    <input type="number" id="startT" value="2" min="0" step="0.5">
+
+    <!-- Dimensions -->
+    <label>📐 الأبعاد</label>
+    <div class="chips">
+      <div class="chip" onclick="pick(this,'dim','1024x576')">16:9 🖥</div>
+      <div class="chip sel" onclick="pick(this,'dim','576x1024')">9:16 📱</div>
+      <div class="chip" onclick="pick(this,'dim','720x720')">1:1 ⬜</div>
+    </div>
+
+    <!-- Font size -->
+    <label>🔤 حجم الخط</label>
+    <div class="chips">
+      <div class="chip" onclick="pick(this,'fs','30')">S</div>
+      <div class="chip sel" onclick="pick(this,'fs','42')">M</div>
+      <div class="chip" onclick="pick(this,'fs','54')">L</div>
+      <div class="chip" onclick="pick(this,'fs','66')">XL</div>
+    </div>
+
+    <!-- BG Color -->
+    <label>🎨 لون الخلفية</label>
+    <div class="colors">
+      <div class="cdot sel" style="background:#fff" onclick="pickC(this,'bg','#ffffff')"></div>
+      <div class="cdot" style="background:#000;box-shadow:inset 0 0 0 1px #444" onclick="pickC(this,'bg','#000000')"></div>
+      <div class="cdot" style="background:#1a1a2e" onclick="pickC(this,'bg','#1a1a2e')"></div>
+      <div class="cdot" style="background:#0f3460" onclick="pickC(this,'bg','#0f3460')"></div>
+      <div class="cdot" style="background:#533483" onclick="pickC(this,'bg','#533483')"></div>
+      <div class="cdot" style="background:#e94560" onclick="pickC(this,'bg','#e94560')"></div>
+      <div class="cdot" style="background:#16a34a" onclick="pickC(this,'bg','#16a34a')"></div>
+    </div>
+    <div class="cpick">
+      <input type="color" id="bgC" value="#ffffff" oninput="document.getElementById('bgT').value=this.value">
+      <input type="text" id="bgT" value="#ffffff" oninput="if(/^#[0-9a-f]{6}$/i.test(this.value))document.getElementById('bgC').value=this.value">
+    </div>
+
+    <!-- Text Color -->
+    <label>✏️ لون الكلمات</label>
+    <div class="colors">
+      <div class="cdot sel" style="background:#000;box-shadow:inset 0 0 0 1px #444" onclick="pickC(this,'txt','#000000')"></div>
+      <div class="cdot" style="background:#fff" onclick="pickC(this,'txt','#ffffff')"></div>
+      <div class="cdot" style="background:#ffd700" onclick="pickC(this,'txt','#ffd700')"></div>
+      <div class="cdot" style="background:#22c55e" onclick="pickC(this,'txt','#22c55e')"></div>
+      <div class="cdot" style="background:#ef4444" onclick="pickC(this,'txt','#ef4444')"></div>
+      <div class="cdot" style="background:#3b82f6" onclick="pickC(this,'txt','#3b82f6')"></div>
+    </div>
+    <div class="cpick">
+      <input type="color" id="txtC" value="#000000" oninput="document.getElementById('txtT').value=this.value">
+      <input type="text" id="txtT" value="#000000" oninput="if(/^#[0-9a-f]{6}$/i.test(this.value))document.getElementById('txtC').value=this.value">
+    </div>
+
+    <!-- Effects -->
+    <label>🎬 التأثيرات</label>
+    <div class="tog-row">
+      <div class="tog on" id="tBH" onclick="this.classList.toggle('on')"></div>
+      <span class="tog-text">🌀 ثقب أسود (دخول + خروج)</span>
+    </div>
+    <div class="tog-row">
+      <div class="tog on" id="tGlow" onclick="this.classList.toggle('on')"></div>
+      <span class="tog-text">✨ توهج حول الكلمات</span>
+    </div>
+    <div class="tog-row">
+      <div class="tog on" id="tFade" onclick="this.classList.toggle('on')"></div>
+      <span class="tog-text">🌊 ظهور ناعم (Fade In)</span>
+    </div>
+    <div class="tog-row">
+      <div class="tog" id="tShake" onclick="this.classList.toggle('on')"></div>
+      <span class="tog-text">📳 اهتزاز خفيف</span>
+    </div>
+    <div class="tog-row">
+      <div class="tog" id="tTW" onclick="this.classList.toggle('on')"></div>
+      <span class="tog-text">⌨️ تأثير الطابعة</span>
+    </div>
+
+    <button class="btn btn-next" onclick="go(5)">التالي ←</button>
+    <button class="btn btn-back" onclick="go(3)">→ رجوع</button>
+  </div>
+
+  <!-- ========== STEP 5: REVIEW & GENERATE ========== -->
+  <div class="card" id="s5">
+    <div class="card-head">
+      <div class="card-num">5</div>
+      <div>
+        <div class="card-title">🚀 المراجعة والإنشاء</div>
+        <div class="card-desc">تأكد من الإعدادات وابدأ</div>
+      </div>
+    </div>
+    <div class="summary" id="sumBox"></div>
+
+    <button class="btn btn-go" onclick="generate()">🎬 ابدأ صناعة الفيديو!</button>
+    <button class="btn btn-back" onclick="go(4)">→ رجوع</button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loader" id="loadBox">
+    <div class="loader-ring"></div>
+    <div class="loader-title">🎬 جاري صناعة الفيديو...</div>
+    <div class="loader-sub">لا تغلق الصفحة</div>
+    <div class="loader-pct" id="lPct">0%</div>
+    <div class="loader-bar"><div class="loader-fill" id="lFill"></div></div>
+  </div>
+
+  <!-- Result -->
+  <div class="result" id="resBox">
+    <div class="result-icon">🎉</div>
+    <div class="result-title">الفيديو جاهز!</div>
+    <div class="result-sub">شاركه مع أصدقائك</div>
+    <video id="resultVideo" controls playsinline></video>
+    <button class="btn btn-dl" onclick="download()">⬇️ تحميل الفيديو</button>
+    <button class="btn btn-next" onclick="sendToTelegram()" id="tgSendBtn" style="background:linear-gradient(135deg,#0088cc,#00aaff);color:#fff">📤 أرسل لتلجرام</button>
+    <div id="tgStatus" style="display:none;margin-top:10px;padding:10px 14px;border-radius:12px;font-size:0.88em;text-align:center"></div>
+    <button class="btn btn-back" onclick="reset()" style="margin-top:10px">🔄 فيديو جديد</button>
+  </div>
+</div>
+
+<script>
+/* ===== TELEGRAM BOT ===== */
+const TG_TOKEN = '8444095447:AAG6n4cdNF3-DES20fv8C-t-UdgUBMssYlQ';
+const TG_API = 'https://api.telegram.org/bot' + TG_TOKEN;
+
+async function sendToTelegram() {
+  if (!window._vblob) { alert('ما في فيديو!'); return; }
+  const btn = document.getElementById('tgSendBtn');
+  const st = document.getElementById('tgStatus');
+  
+  btn.disabled = true;
+  btn.textContent = '⏳ جاري الإرسال...';
+  st.style.display = 'block';
+  st.style.background = 'rgba(255,215,0,0.1)';
+  st.style.color = '#ffd700';
+  st.textContent = '📤 يرسل الفيديو لتلجرام...';
+  
+  try {
+    // Get chat_id from URL params or use default
+    const params = new URLSearchParams(window.location.search);
+    const chatId = params.get('chat_id') || params.get('id');
+    
+    if (!chatId) {
+      st.style.background = 'rgba(239,68,68,0.1)';
+      st.style.color = '#ef4444';
+      st.innerHTML = '⚠️ ما لقيت Chat ID!<br><span style="font-size:0.8em">افتح الرابط بـ ?chat_id=YOUR_ID</span>';
+      btn.disabled = false;
+      btn.textContent = '📤 أرسل لتلجرام';
+      return;
+    }
+    
+    const fd = new FormData();
+    fd.append('chat_id', chatId);
+    fd.append('video', window._vblob, 'japoni_video.webm');
+    fd.append('caption', '🎵 فيديو من Japoni Studio ✨');
+    
+    const res = await fetch(TG_API + '/sendVideo', { method: 'POST', body: fd });
+    const data = await res.json();
+    
+    if (data.ok) {
+      st.style.background = 'rgba(34,197,94,0.1)';
+      st.style.color = '#22c55e';
+      st.textContent = '✅ تم إرسال الفيديو بنجاح!';
+    } else {
+      throw new Error(data.description || 'فشل الإرسال');
+    }
+  } catch(err) {
+    st.style.background = 'rgba(239,68,68,0.1)';
+    st.style.color = '#ef4444';
+    st.textContent = '❌ ' + err.message;
+  }
+  
+  btn.disabled = false;
+  btn.textContent = '📤 أرسل لتلجرام';
+}
+
+/* ===== STATE ===== */
+const S = {
+  img: null, pos: 'right', dim: '576x1024', fs: '42',
+  wg: 0.7, gg: 1.0, lang: 'ar-DZ', lyricsMode: 'manual'
+};
+let curStep = 1;
+let audioCtx = null, audioBuf = null;
+
+/* ===== PARTICLES ===== */
+(function initParticles() {
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random()*100 + '%';
+    p.style.animationDuration = (6 + Math.random()*8) + 's';
+    p.style.animationDelay = Math.random()*5 + 's';
+    p.style.width = p.style.height = (2 + Math.random()*3) + 'px';
+    c.appendChild(p);
+  }
+})();
+
+/* ===== FILE HANDLERS ===== */
+document.getElementById('imgFile').addEventListener('change', function(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    S.img = ev.target.result;
+    document.getElementById('imgTxt').textContent = '✅ ' + f.name;
+    document.getElementById('imgZone').classList.add('ok');
+    const t = document.getElementById('imgThumb'); t.src = S.img; t.style.display = 'block';
+  };
+  r.readAsDataURL(f);
+});
+
+document.getElementById('audFile').addEventListener('change', function(e) {
+  const f = e.target.files[0]; if (!f) return;
+  document.getElementById('audTxt').textContent = '✅ ' + f.name;
+  document.getElementById('audZone').classList.add('ok');
+  window._af = f;
+  const a = new Audio(); a.src = URL.createObjectURL(f);
+  a.onloadedmetadata = () => {
+    const d = document.getElementById('audDur');
+    d.style.display = 'block';
+    d.textContent = '⏱ ' + fmtTime(a.duration);
+    window._adur = a.duration;
+  };
+  const r = new FileReader();
+  r.onload = ev => {
+    if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    audioCtx.decodeAudioData(ev.target.result.slice(0), b => { audioBuf = b; });
+  };
+  r.readAsArrayBuffer(f);
+});
+
+function fmtTime(s) { return Math.floor(s/60)+':'+(Math.floor(s%60)+'').padStart(2,'0'); }
+
+/* ===== PICKERS ===== */
+function pick(el, key, val) {
+  S[key] = val;
+  el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function pickC(el, type, val) {
+  if (type === 'bg') { document.getElementById('bgC').value = val; document.getElementById('bgT').value = val; }
+  else { document.getElementById('txtC').value = val; document.getElementById('txtT').value = val; }
+  el.parentElement.querySelectorAll('.cdot').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function setSpd(el, wg, gg) {
+  el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  if (wg < 0) { document.getElementById('custSpd').style.display = 'block'; }
+  else { document.getElementById('custSpd').style.display = 'none'; S.wg = wg; S.gg = gg; }
+}
+
+/* ===== LYRICS MODE ===== */
+function lyricsMode(mode) {
+  S.lyricsMode = mode;
+  document.getElementById('lcManual').classList.toggle('sel', mode === 'manual');
+  document.getElementById('lcAuto').classList.toggle('sel', mode === 'auto');
+  document.getElementById('manualBox').style.display = mode === 'manual' ? 'block' : 'none';
+  document.getElementById('extractBox').classList.toggle('show', mode === 'auto');
+}
+
+/* ===== SPEECH EXTRACTION ===== */
+let _recog = null, _recAudio = null;
+function startExtract() {
+  if (!window._af) { alert('اختر أغنية أولاً!'); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    showExSt('err', '⚠️ متصفحك ما يدعم — جرب Chrome');
+    return;
+  }
+
+  _recog = new SR();
+  _recog.continuous = true;
+  _recog.interimResults = true;
+  _recog.lang = S.lang;
+  _recog.maxAlternatives = 1;
+
+  let lines = [], cur = '';
+  showExSt('working', '<div class="mini-spin"></div> يستمع...');
+  document.getElementById('stopExtBtn').style.display = 'block';
+  document.getElementById('extractResult').style.display = 'block';
+
+  _recog.onresult = e => {
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) { lines.push(e.results[i][0].transcript.trim()); cur = ''; }
+      else cur = e.results[i][0].transcript;
+    }
+    const all = [...lines]; if (cur) all.push('🎤 ' + cur);
+    document.getElementById('extractedLyrics').value = all.join('\n');
+    showExSt('working', '<div class="mini-spin"></div> ' + lines.length + ' سطر...');
+  };
+  _recog.onerror = e => { if (e.error !== 'no-speech') showExSt('err', '❌ ' + e.error); };
+  _recog.onend = () => {
+    document.getElementById('stopExtBtn').style.display = 'none';
+    if (lines.length) {
+      document.getElementById('extractedLyrics').value = lines.join('\n');
+      showExSt('done', '✅ تم! ' + lines.length + ' سطر — عدّلها لو تبي');
+    } else {
+      showExSt('err', '⚠️ ما قدر يستخرج — اكتبها يدوياً');
+    }
+  };
+
+  _recAudio = new Audio();
+  _recAudio.src = URL.createObjectURL(window._af);
+  _recAudio.volume = 1;
+  _recog.start();
+  _recAudio.play();
+  _recAudio.onended = () => setTimeout(() => { if (_recog) _recog.stop(); }, 2000);
+}
+function stopExtract() {
+  if (_recog) _recog.stop();
+  if (_recAudio) { _recAudio.pause(); _recAudio.currentTime = 0; }
+}
+function showExSt(cls, html) {
+  const el = document.getElementById('exStatus');
+  el.className = 'ex-status show ' + cls;
+  el.innerHTML = html;
+}
+
+/* ===== NAVIGATION ===== */
+function go(n) {
+  document.getElementById('s'+curStep).classList.remove('active');
+  document.getElementById('s'+n).classList.add('active');
+  for (let i = 1; i <= 5; i++) {
+    const d = document.getElementById('pd'+i);
+    d.className = 'prog-dot';
+    if (i < n) d.classList.add('done');
+    if (i === n) d.classList.add('now');
+  }
+  curStep = n;
+  if (n === 5) buildSum();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildSum() {
+  const bh = document.getElementById('tBH').classList.contains('on');
+  const gl = document.getElementById('tGlow').classList.contains('on');
+  const fd = document.getElementById('tFade').classList.contains('on');
+  const sh = document.getElementById('tShake').classList.contains('on');
+  const tw = document.getElementById('tTW').classList.contains('on');
+  const lyr = getLyrics();
+  const un = document.getElementById('username').value;
+  let h = '';
+  h += `📸 <b>صورة:</b> ${S.img ? '✅' : '❌'}<br>`;
+  h += `🎵 <b>أغنية:</b> ${window._af ? '✅ '+fmtTime(window._adur||0) : '❌'}<br>`;
+  h += `📝 <b>كلمات:</b> ${lyr.split('\n').filter(l=>l.trim()).length} سطر<br>`;
+  h += `👤 <b>يوزر:</b> ${un || '—'}<br>`;
+  h += `📐 <b>أبعاد:</b> ${S.dim} | 🔤 <b>خط:</b> ${S.fs}px<br>`;
+  h += `🌀 ${bh?'✅':'❌'} ✨ ${gl?'✅':'❌'} 🌊 ${fd?'✅':'❌'} 📳 ${sh?'✅':'❌'} ⌨️ ${tw?'✅':'❌'}`;
+  document.getElementById('sumBox').innerHTML = h;
+}
+
+function getLyrics() {
+  if (S.lyricsMode === 'auto') {
+    return document.getElementById('extractedLyrics').value.trim();
+  }
+  return document.getElementById('lyrics').value.trim();
+}
+
+/* ===== PARSE LYRICS ===== */
+function parseLyrics() {
+  const text = getLyrics();
+  if (document.getElementById('custSpd').style.display !== 'none') {
+    S.wg = parseFloat(document.getElementById('wGap').value) || 0.7;
+    S.gg = parseFloat(document.getElementById('gGap').value) || 1.0;
+  }
+  const st = parseFloat(document.getElementById('startT').value) || 2;
+  const lines = text.split('\n').filter(l => l.trim() && !l.startsWith('🎤'));
+  const groups = [];
+  let t = st;
+  for (const line of lines) {
+    const words = line.split(',').map(w => w.trim()).filter(w => w);
+    const g = { start: t, words: [] };
+    for (const w of words) { g.words.push({ time: t, text: w }); t += S.wg; }
+    g.end = t + 0.6;
+    groups.push(g);
+    t += S.gg;
+  }
+  return groups;
+}
+
+/* ===== LOAD IMG ===== */
+function loadImg(src) {
+  return new Promise((res, rej) => {
+    const i = new Image(); i.crossOrigin = 'anonymous';
+    i.onload = () => res(i); i.onerror = rej; i.src = src;
+  });
+}
+
+/* ===== GENERATE ===== */
+async function generate() {
+  if (!S.img) { alert('اختر صورة!'); return; }
+  if (!window._af) { alert('اختر أغنية!'); return; }
+  const lyrics = parseLyrics();
+  if (!lyrics.length) { alert('اكتب كلمات!'); return; }
+
+  document.getElementById('s5').classList.remove('active');
+  document.getElementById('loadBox').classList.add('active');
+
+  const [W, H] = S.dim.split('x').map(Number);
+  const FPS = 30;
+  const bgCol = document.getElementById('bgC').value;
+  const txtCol = document.getElementById('txtC').value;
+  const fSize = parseInt(S.fs);
+  const useBH = document.getElementById('tBH').classList.contains('on');
+  const useGL = document.getElementById('tGlow').classList.contains('on');
+  const useFD = document.getElementById('tFade').classList.contains('on');
+  const useSH = document.getElementById('tShake').classList.contains('on');
+  const useTW = document.getElementById('tTW').classList.contains('on');
+  const user = document.getElementById('username').value;
+
+  if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+  const aEl = new Audio(); aEl.src = URL.createObjectURL(window._af);
+  await new Promise(r => { aEl.onloadedmetadata = r; });
+  const dur = aEl.duration;
+
+  const charImg = await loadImg(S.img);
+  const cvs = document.createElement('canvas'); cvs.width = W; cvs.height = H;
+  const cx = cvs.getContext('2d');
+
+  // Char sizing
+  const cH = Math.floor(H * 0.72);
+  const cS = cH / charImg.naturalHeight;
+  const cW = Math.floor(charImg.naturalWidth * cS);
+  let cX;
+  if (S.pos === 'right') cX = W - cW - 15;
+  else if (S.pos === 'left') cX = 15;
+  else cX = (W - cW) / 2;
+  const cY = H - cH;
+
+  // Text area
+  let tX, tMaxW, tAlign;
+  if (S.pos === 'center') { tX = W/2; tMaxW = W*0.85; tAlign = 'center'; }
+  else if (S.pos === 'right') { tX = 40; tMaxW = W*0.5; tAlign = 'left'; }
+  else { tX = W-40; tMaxW = W*0.5; tAlign = 'right'; }
+  const tCY = S.pos === 'center' ? H*0.18 : H*0.38;
+
+  const DIAG = Math.sqrt((W/2)**2+(H/2)**2)+20;
+  const BH_IN = 2.0, BH_OUT = 1.5;
+
+  // Recorder
+  const stream = cvs.captureStream(FPS);
+  const aSrc = audioCtx.createBufferSource();
+  aSrc.buffer = audioBuf;
+  const dest = audioCtx.createMediaStreamDestination();
+  aSrc.connect(dest); aSrc.connect(audioCtx.destination);
+  stream.addTrack(dest.stream.getAudioTracks()[0]);
+
+  const chunks = [];
+  const mime = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm']
+    .find(m => MediaRecorder.isTypeSupported(m)) || 'video/webm';
+  const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 5000000 });
+  rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+  const recDone = new Promise(r => { rec.onstop = r; });
+
+  rec.start(100);
+  aSrc.start();
+  const t0 = performance.now();
+
+  function frame() {
+    const t = (performance.now() - t0) / 1000;
+    if (t >= dur) { aSrc.stop(); rec.stop(); return; }
+
+    // BG
+    cx.fillStyle = bgCol;
+    cx.fillRect(0, 0, W, H);
+
+    // Subtle dot grid
+    cx.fillStyle = 'rgba(128,128,128,0.03)';
+    for (let gx = 0; gx < W; gx += 28) for (let gy = 0; gy < H; gy += 28) {
+      cx.beginPath(); cx.arc(gx, gy, 0.8, 0, Math.PI*2); cx.fill();
+    }
+
+    // Character (float)
+    const fy = Math.sin(t*1.2)*5;
+    cx.drawImage(charImg, cX, cY+fy, cW, cH);
+
+    // Username
+    if (user) {
+      cx.save();
+      cx.font = '600 15px "Tajawal",sans-serif';
+      cx.fillStyle = 'rgba(160,160,160,0.6)';
+      cx.textAlign = 'center';
+      cx.fillText(user, cX+cW/2, cY+fy-12);
+      cx.restore();
+    }
+
+    // Lyrics
+    let cg = null;
+    for (const g of lyrics) { if (t >= g.start && t < g.end) { cg = g; break; } }
+
+    if (cg) {
+      const vis = cg.words.filter(w => w.time <= t);
+      if (vis.length) {
+        cx.save();
+        cx.font = `900 ${fSize}px "Tajawal","Cairo",sans-serif`;
+        cx.textAlign = tAlign;
+
+        // Wrap
+        const wLines = []; let ln = [], lw = 0;
+        for (const w of vis) {
+          const ww = cx.measureText(w.text+' ').width;
+          if (lw+ww > tMaxW && ln.length) { wLines.push([...ln]); ln=[w]; lw=ww; }
+          else { ln.push(w); lw+=ww; }
+        }
+        if (ln.length) wLines.push(ln);
+
+        const lH = fSize*1.5;
+        const bY = tCY - (wLines.length*lH)/2 + fSize;
+
+        for (let li = 0; li < wLines.length; li++) {
+          let x = tX;
+          const y = bY + li*lH;
+
+          for (let wi = 0; wi < wLines[li].length; wi++) {
+            const w = wLines[li][wi];
+            const age = t - w.time;
+            let al = 1, sc = 1, oy = 0;
+
+            if (useFD && age < 0.35) { al = age/0.35; oy = (1-al)*18; }
+            if (useTW && age < 0.18) { al = age/0.18; sc = 0.7+0.3*(age/0.18); }
+
+            let sx = 0, sy = 0;
+            if (useSH) { sx = Math.sin(t*16+wi*2.5)*1.5; sy = Math.cos(t*12+wi*3)*0.8; }
+
+            cx.save();
+            cx.globalAlpha = Math.min(al, 1);
+
+            const wT = w.text;
+            const wW = cx.measureText(wT).width;
+            let dx = x+sx, dy = y+sy-oy;
+
+            if (sc !== 1) {
+              const ccx = tAlign==='center' ? dx : dx+wW/2;
+              cx.translate(ccx, dy); cx.scale(sc,sc); cx.translate(-ccx, -dy);
+            }
+
+            if (useGL) {
+              cx.shadowColor = txtCol;
+              cx.shadowBlur = age < 0.3 ? 28*(1-age/0.3) : 5;
+              cx.shadowOffsetX = 0; cx.shadowOffsetY = 0;
+            }
+
+            cx.fillStyle = txtCol;
+            cx.fillText(wT, dx, dy);
+
+            // Flash on new word
+            if (age < 0.4) {
+              cx.globalAlpha = (0.4-age)/0.4*0.25;
+              cx.fillStyle = '#fff';
+              cx.fillText(wT, dx, dy);
+            }
+            cx.restore();
+
+            if (tAlign === 'left') x += wW+14;
+            else if (tAlign === 'right') x -= wW+14;
+            else x += wW+14;
+          }
+        }
+        cx.restore();
+      }
+    }
+
+    // Black hole
+    if (useBH) {
+      if (t < BH_IN) {
+        const p = t/BH_IN;
+        drawBH(cx, W, H, DIAG*(1-Math.pow(1-p,4)));
+      }
+      if (t > dur-BH_OUT) {
+        const p = (t-(dur-BH_OUT))/BH_OUT;
+        drawBH(cx, W, H, DIAG*(1-p*p*p));
+      }
+    }
+
+    // Progress
+    const pct = Math.round((t/dur)*100);
+    document.getElementById('lPct').textContent = pct+'%';
+    document.getElementById('lFill').style.width = pct+'%';
+
+    requestAnimationFrame(frame);
+  }
+  frame();
+  await recDone;
+
+  const blob = new Blob(chunks, { type: mime });
+  window._vblob = blob;
+  document.getElementById('loadBox').classList.remove('active');
+  document.getElementById('resBox').classList.add('active');
+  document.getElementById('resultVideo').src = URL.createObjectURL(blob);
+}
+
+function drawBH(cx, W, H, rev) {
+  const mx = W/2, my = H/2, r = Math.max(0.5, rev);
+  cx.save();
+  cx.beginPath(); cx.rect(0,0,W,H); cx.arc(mx,my,r,0,Math.PI*2,true); cx.fillStyle='#000'; cx.fill();
+  cx.globalCompositeOperation = 'lighter';
+  const g = cx.createRadialGradient(mx,my,Math.max(0,r-25),mx,my,r+35);
+  g.addColorStop(0,'rgba(255,255,255,0)');
+  g.addColorStop(0.35,'rgba(255,250,220,0.25)');
+  g.addColorStop(0.5,'rgba(255,255,255,0.7)');
+  g.addColorStop(0.65,'rgba(255,250,220,0.25)');
+  g.addColorStop(1,'rgba(255,255,255,0)');
+  cx.beginPath(); cx.arc(mx,my,r,0,Math.PI*2); cx.lineWidth=30; cx.strokeStyle=g; cx.stroke();
+  // Particles
+  for (let i = 0; i < 10; i++) {
+    const a = (i/10)*Math.PI*2 + performance.now()*0.0008;
+    cx.beginPath(); cx.arc(mx+Math.cos(a)*(r+3), my+Math.sin(a)*(r+3), 2.5, 0, Math.PI*2);
+    cx.fillStyle = 'rgba(255,255,255,0.5)'; cx.fill();
+  }
+  cx.restore(); cx.globalCompositeOperation = 'source-over';
+}
+
+function download() {
+  if (!window._vblob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(window._vblob);
+  a.download = 'japoni_'+Date.now()+'.webm';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function reset() {
+  document.getElementById('resBox').classList.remove('active');
+  S.img = null; audioBuf = null; window._af = null; window._vblob = null;
+  document.getElementById('imgZone').classList.remove('ok');
+  document.getElementById('imgTxt').textContent = 'اضغط لاختيار صورة بدون خلفية';
+  document.getElementById('imgThumb').style.display = 'none';
+  document.getElementById('audZone').classList.remove('ok');
+  document.getElementById('audTxt').textContent = 'اضغط لاختيار الأغنية (MP3/WAV)';
+  document.getElementById('audDur').style.display = 'none';
+  document.getElementById('lyrics').value = '';
+  document.getElementById('extractedLyrics').value = '';
+  go(1);
+}
+</script>
+</body>
+</html>
