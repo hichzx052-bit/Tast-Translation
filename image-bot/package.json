@@ -1,0 +1,12 @@
+{
+  "name": "hichamdzz-ai-studio",
+  "version": "2.0.0",
+  "description": "Hichamdzz AI Studio - Image & Video Generation Bot",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
